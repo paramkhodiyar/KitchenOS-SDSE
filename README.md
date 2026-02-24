@@ -162,4 +162,10 @@ The backend exposes a JSON REST API. All protected endpoints require a valid Bea
    node src/scripts/seed-demo.js
    ```
 
+
+---
+
+## Team 
+- Param Khodiyar
+
 The application should now be running with Frontend on `https://kitchen-os-seven.vercel.app/` and Backend on `https://kitchenos-mo2z.onrender.com/`.
