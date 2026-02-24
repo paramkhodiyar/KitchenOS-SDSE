@@ -1,0 +1,177 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Store {
+  id             String        @id @default(uuid())
+  name           String
+  createdAt      DateTime      @default(now())
+  storeCode      String        @unique
+  ownerPinHash   String
+  cashierPinHash String
+  kitchenPinHash String
+  isInitialized  Boolean       @default(false)
+  users          User[]
+  products       Product[]
+  orders         Order[]
+  accounts       Account[]
+  transactions   Transaction[]
+  rawMaterials   RawMaterial[]
+  overrideLogs   OverrideLog[]
+}
+
+model User {
+  id       String @id @default(uuid())
+  storeId  String
+  name     String
+  email    String @unique
+  password String
+  role     Role
+
+  store Store @relation(fields: [storeId], references: [id])
+}
+
+model Product {
+  id           String        @id @default(uuid())
+  storeId      String
+  name         String
+  price        Float
+  stock        Int
+  minStock     Int
+  isActive     Boolean       @default(true)
+  category     String?
+  store        Store         @relation(fields: [storeId], references: [id])
+  stockLogs    StockLog[]
+  orderItems   OrderItem[]
+  overrideLogs OverrideLog[]
+}
+
+model RawMaterial {
+  id            String            @id @default(uuid())
+  storeId       String
+  name          String
+  status        RawMaterialStatus
+  overrideUntil DateTime?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  store        Store         @relation(fields: [storeId], references: [id])
+  overrideLogs OverrideLog[]
+}
+
+model OverrideLog {
+  id            String   @id @default(uuid())
+  storeId       String
+  productId     String
+  rawMaterialId String
+  role          Role
+  reason        String?
+  createdAt     DateTime @default(now())
+
+  store       Store       @relation(fields: [storeId], references: [id])
+  product     Product     @relation(fields: [productId], references: [id])
+  rawMaterial RawMaterial @relation(fields: [rawMaterialId], references: [id])
+}
+
+model Order {
+  id        String      @id @default(uuid())
+  storeId   String
+  status    OrderStatus
+  total     Float
+  createdAt DateTime    @default(now())
+
+  store       Store        @relation(fields: [storeId], references: [id])
+  items       OrderItem[]
+  transaction Transaction?
+}
+
+model OrderItem {
+  id        String @id @default(uuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Float
+
+  order   Order   @relation(fields: [orderId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model StockLog {
+  id        String   @id @default(uuid())
+  productId String
+  change    Int
+  reason    String
+  createdAt DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model Account {
+  id      String      @id @default(uuid())
+  storeId String
+  name    String
+  type    AccountType
+  balance Float
+
+  store        Store         @relation(fields: [storeId], references: [id])
+  transactions Transaction[]
+}
+
+model Transaction {
+  id        String          @id @default(uuid())
+  storeId   String
+  accountId String
+  type      TransactionType
+  amount    Float
+  note      String?
+  createdAt DateTime        @default(now())
+  orderId   String?         @unique
+
+  store   Store   @relation(fields: [storeId], references: [id])
+  account Account @relation(fields: [accountId], references: [id])
+  order   Order?  @relation(fields: [orderId], references: [id])
+}
+
+enum Role {
+  OWNER
+  STAFF
+  CASHIER
+  KITCHEN
+}
+
+enum OrderStatus {
+  PENDING
+  PREPARING
+  READY
+  COMPLETED
+  CANCELLED
+}
+
+enum AccountType {
+  CASH
+  BANK
+  UPI
+  WALLET
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum RawMaterialStatus {
+  AVAILABLE
+  LOW
+  OUT
+}
