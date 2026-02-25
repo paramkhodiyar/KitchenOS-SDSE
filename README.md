@@ -165,7 +165,7 @@ The backend exposes a JSON REST API. All protected endpoints require a valid Bea
 
 ---
 
-## Team 
+## Team Members (SDSE Project Semester 4)
 - Param Khodiyar
 - Pratiti Paul
 
