@@ -167,6 +167,7 @@ The backend exposes a JSON REST API. All protected endpoints require a valid Bea
 
 ## Team Members (SDSE Project Semester 4)
 - Param Khodiyar
+- Adit Singh
 - Pratiti Paul
 
 The application should now be running with Frontend on `https://kitchen-os-seven.vercel.app/` and Backend on `https://kitchenos-mo2z.onrender.com/`.
