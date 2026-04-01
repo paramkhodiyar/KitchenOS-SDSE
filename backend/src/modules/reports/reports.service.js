@@ -125,7 +125,7 @@ const getStockReport = async ({ storeId }) => {
         items.push({
             id: rm.id,
             name: rm.name,
-            stock: null,
+            stock: rm.stock,
             status: rm.status,
             type: 'RAW_MATERIAL'
         });
