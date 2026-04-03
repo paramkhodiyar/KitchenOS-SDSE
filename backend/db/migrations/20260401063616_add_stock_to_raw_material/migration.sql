@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "RawMaterial" ADD COLUMN     "minStock" INTEGER NOT NULL DEFAULT 10,
+ADD COLUMN     "stock" INTEGER NOT NULL DEFAULT 0;

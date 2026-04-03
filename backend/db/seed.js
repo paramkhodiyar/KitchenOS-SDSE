@@ -205,8 +205,17 @@ async function main() {
     ];
 
     for (const r of rawMaterialsData) {
+        let stock = 50; // AVAILABLE
+        if (r.status === "LOW") stock = 5;
+        if (r.status === "OUT") stock = 0;
+
         await prisma.rawMaterial.create({
-            data: { ...r, storeId: store.id },
+            data: { 
+                ...r, 
+                stock: stock,
+                minStock: 20,
+                storeId: store.id 
+            },
         });
     }
     console.log(`Created ${rawMaterialsData.length} raw materials`);

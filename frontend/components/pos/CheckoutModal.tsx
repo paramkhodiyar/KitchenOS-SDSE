@@ -176,7 +176,7 @@ export function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
 
                             <Button
                                 size="xl"
-                                className="w-full text-lg h-16 border border-black rounded-xl"
+                                className="w-full text-lg h-16 rounded-xl border border-black"
                                 onClick={() => processOrder()}
                                 disabled={items.length === 0}
                             >
