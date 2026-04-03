@@ -11,9 +11,12 @@ import { cn } from "@/lib/utils";
 import { toast } from "react-hot-toast";
 
 import { CheckoutModal } from "@/components/pos/CheckoutModal";
+import { LowStockModal } from "@/components/pos/LowStockModal";
+import { AlertTriangle } from "lucide-react";
 
 export default function POSPage() {
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+    const [isLowStockOpen, setIsLowStockOpen] = useState(false);
     const [products, setProducts] = useState<Product[]>([]);
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
@@ -53,14 +56,24 @@ export default function POSPage() {
         <div className="space-y-6 pb-24">
             {/* Search Bar */}
             <div className="sticky top-0 bg-background pt-2 z-10 pb-4 -mx-6 px-6">
-                <div className="relative mb-4">
-                    <Search className="absolute left-3 top-4 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        placeholder="Search products..."
-                        className="pl-9 h-12 text-lg rounded-xl shadow-sm bg-card"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
+                <div className="relative mb-4 flex items-center gap-2">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-3 top-4 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            placeholder="Search products..."
+                            className="pl-9 h-12 text-lg rounded-xl shadow-sm bg-card"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
+                    <Button
+                        variant="outline"
+                        className="h-12 border border-black text-amber-600 hover:bg-amber-50"
+                        onClick={() => setIsLowStockOpen(true)}
+                    >
+                        <AlertTriangle className="w-5 h-5 md:mr-2" />
+                        <span className="hidden md:inline">Low Stock</span>
+                    </Button>
                 </div>
 
                 {/* Category Filters */}
@@ -165,6 +178,11 @@ export default function POSPage() {
             <CheckoutModal
                 isOpen={isCheckoutOpen}
                 onClose={() => setIsCheckoutOpen(false)}
+            />
+
+            <LowStockModal
+                isOpen={isLowStockOpen}
+                onClose={() => setIsLowStockOpen(false)}
             />
         </div>
     );

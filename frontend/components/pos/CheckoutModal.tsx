@@ -6,11 +6,12 @@ import {
     X,
     Loader2,
     CheckCircle,
-    AlertTriangle,
     Wallet,
     CreditCard,
     Banknote,
-    Smartphone
+    Smartphone,
+    Trash2,
+    AlertTriangle
 } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { createOrder, addItemToOrder } from "@/services/orderService";
@@ -18,27 +19,27 @@ import { getAccounts, recordIncome, Account, createAccount } from "@/services/ac
 import { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
+import { LowStockModal } from "./LowStockModal";
 
 interface CheckoutModalProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
-type Stage = "REVIEW" | "SENDING" | "CONFLICT" | "PAYMENT";
+type Stage = "REVIEW" | "SENDING" | "PAYMENT";
 
 export function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
-    const { items, total, clearCart } = useCartStore();
+    const { items, total, clearCart, removeItem } = useCartStore();
     const [stage, setStage] = useState<Stage>("REVIEW");
     const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
-    const [conflictItem, setConflictItem] = useState<{ name: string; id: string; qty: number } | null>(null);
     const [accounts, setAccounts] = useState<Account[]>([]);
+    const [isLowStockOpen, setIsLowStockOpen] = useState(false);
 
     // Reset state when opening
     useEffect(() => {
         if (isOpen) {
             setStage("REVIEW");
             setCreatedOrderId(null);
-            setConflictItem(null);
         }
     }, [isOpen]);
 
@@ -57,17 +58,7 @@ export function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
             // 2. Add Items
             for (let i = resumeIndex; i < items.length; i++) {
                 const item = items[i];
-                try {
-                    await addItemToOrder(orderId!, item.productId, item.quantity);
-                } catch (error: any) {
-                    if (error.response?.status === 409) {
-                        setConflictItem({ name: item.name, id: item.productId, qty: item.quantity });
-                        setStage("CONFLICT");
-                        // We pause here. User determines next step.
-                        return; // Stop processing
-                    }
-                    throw error;
-                }
+                await addItemToOrder(orderId!, item.productId, item.quantity);
             }
 
             // Success
@@ -83,32 +74,6 @@ export function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
         }
     };
 
-    const handleOverrideConfirm = async () => {
-        if (!createdOrderId || !conflictItem) return;
-
-        try {
-            setStage("SENDING");
-            // Retry the conflicting item with override
-            await addItemToOrder(createdOrderId, conflictItem.id, conflictItem.qty, true);
-
-            // Continue with remaining items
-            // Find index of conflict item
-            const idx = items.findIndex(i => i.productId === conflictItem.id);
-            if (idx !== -1 && idx < items.length - 1) {
-                // Resume loop from next item
-                await processOrder(createdOrderId, idx + 1);
-            } else {
-                // Done
-                toast.success("Order Sent to Kitchen!");
-                clearCart();
-                fetchAccounts();
-                setStage("PAYMENT");
-            }
-        } catch (error) {
-            toast.error("Override failed");
-            setStage("REVIEW");
-        }
-    };
 
     const fetchAccounts = async () => {
         try {
@@ -153,12 +118,24 @@ export function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
             >
                 {/* Header */}
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold">
-                        {stage === "REVIEW" && "Review Order"}
-                        {stage === "SENDING" && "Processing..."}
-                        {stage === "CONFLICT" && "Inventory Warning"}
-                        {stage === "PAYMENT" && "Collect Payment"}
-                    </h2>
+                    <div className="flex items-center gap-3">
+                        <h2 className="text-2xl font-bold">
+                            {stage === "REVIEW" && "Review Order"}
+                            {stage === "SENDING" && "Processing..."}
+                            {stage === "PAYMENT" && "Collect Payment"}
+                        </h2>
+                        {stage === "REVIEW" && (
+                            <Button 
+                                variant="outline" 
+                                size="sm"
+                                className="h-8 border-amber-200 text-amber-600 hover:bg-amber-50"
+                                onClick={() => setIsLowStockOpen(true)}
+                            >
+                                <AlertTriangle className="w-4 h-4 mr-1" />
+                                <span className="hidden sm:inline">Low Stock</span>
+                            </Button>
+                        )}
+                    </div>
                     {stage !== "SENDING" && (
                         <Button variant="ghost" size="icon" onClick={onClose}>
                             <X className="w-6 h-6" />
@@ -177,7 +154,12 @@ export function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                                         <div className="font-medium">{item.name}</div>
                                         <div className="text-sm text-muted-foreground">x{item.quantity}</div>
                                     </div>
-                                    <div className="font-semibold">₹{item.price * item.quantity}</div>
+                                    <div className="flex items-center gap-4">
+                                        <div className="font-semibold">₹{item.price * item.quantity}</div>
+                                        <Button variant="ghost" size="icon" onClick={() => removeItem(item.productId)} className="text-destructive h-8 w-8 hover:bg-destructive/10">
+                                            <Trash2 className="w-4 h-4" />
+                                        </Button>
+                                    </div>
                                 </div>
                             ))}
 
@@ -194,7 +176,7 @@ export function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
 
                             <Button
                                 size="xl"
-                                className="w-full text-lg h-16 rounded-xl"
+                                className="w-full text-lg h-16 border border-black rounded-xl"
                                 onClick={() => processOrder()}
                                 disabled={items.length === 0}
                             >
@@ -211,31 +193,6 @@ export function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                     </div>
                 )}
 
-                {stage === "CONFLICT" && conflictItem && (
-                    <div className="flex-1 flex flex-col justify-center text-center space-y-6">
-                        <div className="mx-auto w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center text-amber-600">
-                            <AlertTriangle className="w-8 h-8" />
-                        </div>
-                        <div>
-                            <h3 className="text-xl font-bold mb-2">Low Stock Alert</h3>
-                            <p className="text-muted-foreground">
-                                <span className="font-semibold text-foreground">"{conflictItem.name}"</span> has insufficient raw materials.
-                            </p>
-                            <p className="text-sm text-muted-foreground mt-2">
-                                Do you want to force this order anyway? This will log an override.
-                            </p>
-                        </div>
-
-                        <div className="flex gap-3 pt-4">
-                            <Button variant="outline" size="lg" className="flex-1" onClick={onClose}>
-                                Cancel Order
-                            </Button>
-                            <Button variant="destructive" size="lg" className="flex-1" onClick={handleOverrideConfirm}>
-                                Force Override
-                            </Button>
-                        </div>
-                    </div>
-                )}
 
                 {stage === "PAYMENT" && (
                     <div className="flex-1 flex flex-col space-y-6">
@@ -268,6 +225,11 @@ export function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                 )}
 
             </motion.div>
+
+            <LowStockModal
+                isOpen={isLowStockOpen}
+                onClose={() => setIsLowStockOpen(false)}
+            />
         </div>
     );
 }

@@ -46,7 +46,7 @@ const checkProductAvailability = async ({ storeId, productId }) => {
     return {
         sellable: true,
         warnings,
-        overrideRequired,
+        overrideRequired: false,
     };
 };
 

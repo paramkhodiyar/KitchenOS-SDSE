@@ -22,15 +22,6 @@ const setupStore = async ({
     cashierPin,
     kitchenPin,
 }) => {
-    const existingStore = await prisma.store.findFirst();
-
-    if (existingStore?.isInitialized) {
-        throw {
-            status: 403,
-            message: "Store already initialized",
-        };
-    }
-
     const store = await prisma.store.create({
         data: {
             name: storeName,
