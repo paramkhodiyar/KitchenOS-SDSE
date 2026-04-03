@@ -10,18 +10,14 @@ async function main() {
     // Child tables must be deleted before Parent tables
     await prisma.transaction.deleteMany({});
     await prisma.orderItem.deleteMany({}); // Delete OrderItems BEFORE Orders
-    await prisma.order.deleteMany({});     // Now safe to delete Orders
-
+    await prisma.order.deleteMany({});
     await prisma.overrideLog.deleteMany({});
-    await prisma.stockLog.deleteMany({});
-
     // Now delete products and raw materials
     await prisma.product.deleteMany({});
     await prisma.rawMaterial.deleteMany({});
 
-    // Accounts and Users
+    // 3. Delete Accounts
     await prisma.account.deleteMany({});
-    await prisma.user.deleteMany({});
 
     // Finally Store
     await prisma.store.deleteMany({});
