@@ -47,6 +47,15 @@ KitchenOS is built as a monorepo containing both the client and server applicati
 - **Frontend**: A comprehensive Single Page Application (SPA) built with performance and user experience in mind. It communicates with the backend via RESTful APIs.
 - **Backend**: A robust REST API server that handles business logic, authentication, and database interactions.
 - **Database**: Relational database (PostgreSQL) managed via an ORM for structured data persistence.
+### ER Diagram
+![ER Diagram](backend/diagrams/erDiagram.png)
+### Sequence Diagram
+![Sequence Diagram](backend/diagrams/sequenceDiagram.png)
+### UseCase Diagram
+![UseCase](backend/diagrams/UseCase.jpeg)
+
+
+
 
 ### Tech Stack
 
@@ -172,4 +181,4 @@ The backend exposes a JSON REST API. All protected endpoints require a valid Bea
 - Pratiti Paul
 - Kushagra Bhardwaj
 
-The application should now be running with Frontend on `https://kitchen-os-seven.vercel.app/` and Backend on `https://kitchenos-mo2z.onrender.com/`.
+The application should now be running with Frontend on `https://kitchen-os-sdse.vercel.app` and Backend on `https://kitchenossdse.onrender.com`.
