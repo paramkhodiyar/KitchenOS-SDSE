@@ -25,7 +25,7 @@ export default function KitchenPage() {
 
     useEffect(() => {
         fetchOrders();
-        const interval = setInterval(fetchOrders, 10000); // Poll every 10s
+        const interval = setInterval(fetchOrders, 10000);
         return () => clearInterval(interval);
     }, []);
 
@@ -133,9 +133,9 @@ export default function KitchenPage() {
                                         </Button>
                                     )}
                                     <Button
-                                        variant="ghost"
+                                        variant="outline"
                                         onClick={() => handleStatusUpdate(order.id, "CANCELLED")}
-                                        className="text-destructive hover:bg-destructive/10"
+                                        className="text-destructive border-destructive/30 hover:bg-destructive/10"
                                     >
                                         Cancel
                                     </Button>

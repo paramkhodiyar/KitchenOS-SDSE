@@ -49,13 +49,7 @@ const addItemToOrder = async ({
         productId,
     });
 
-    if (availability.overrideRequired && !override) {
-        return {
-            requiresOverride: true,
-            warnings: availability.warnings,
-        };
-    }
-
+    // Proceed without strict override blocks
 
     const orderItem = await prisma.orderItem.create({
         data: {
@@ -76,21 +70,6 @@ const addItemToOrder = async ({
         },
     });
 
-    if (override) {
-        for (const warning of availability.warnings) {
-            if (warning.type === "RAW_MATERIAL_OUT") {
-                await prisma.overrideLog.create({
-                    data: {
-                        storeId,
-                        productId,
-                        rawMaterialId: warning.rawMaterialId,
-                        role,
-                        reason: overrideReason,
-                    },
-                });
-            }
-        }
-    }
 
     return {
         success: true,

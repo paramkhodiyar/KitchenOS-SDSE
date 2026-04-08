@@ -22,24 +22,12 @@ model Store {
   cashierPinHash String
   kitchenPinHash String
   isInitialized  Boolean       @default(false)
-  users          User[]
   products       Product[]
   orders         Order[]
   accounts       Account[]
   transactions   Transaction[]
   rawMaterials   RawMaterial[]
   overrideLogs   OverrideLog[]
-}
-
-model User {
-  id       String @id @default(uuid())
-  storeId  String
-  name     String
-  email    String @unique
-  password String
-  role     Role
-
-  store Store @relation(fields: [storeId], references: [id])
 }
 
 model Product {
@@ -52,7 +40,6 @@ model Product {
   isActive     Boolean       @default(true)
   category     String?
   store        Store         @relation(fields: [storeId], references: [id])
-  stockLogs    StockLog[]
   orderItems   OrderItem[]
   overrideLogs OverrideLog[]
 }
@@ -106,16 +93,6 @@ model OrderItem {
   price     Float
 
   order   Order   @relation(fields: [orderId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
-}
-
-model StockLog {
-  id        String   @id @default(uuid())
-  productId String
-  change    Int
-  reason    String
-  createdAt DateTime @default(now())
-
   product Product @relation(fields: [productId], references: [id])
 }
 
