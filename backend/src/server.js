@@ -5,8 +5,14 @@ import { errorHandler } from "./middleware/error.middleware.js";
 import cors from "cors";
 const app = express();
 
+const allowedOrigins = [
+    "http://localhost:3000",
+    "https://kitchen-os-sdse.vercel.app",
+    process.env.FRONTEND_URL
+].filter(Boolean);
+
 app.use(cors({
-    origin: ["http://localhost:3000", "https://kitchen-os-seven.vercel.app"],
+    origin: allowedOrigins,
     credentials: true
 }));
 app.use(express.json());
