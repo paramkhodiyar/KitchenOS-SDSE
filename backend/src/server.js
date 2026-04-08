@@ -13,15 +13,10 @@ const allowedOrigins = [
 ].filter(Boolean);
 
 app.use(cors({
-    origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps or curl)
-        if (!origin) return callback(null, true);
-        if (allowedOrigins.indexOf(origin) === -1) {
-            return callback(new Error('The CORS policy for this site does not allow access from the specified Origin.'), false);
-        }
-        return callback(null, true);
-    },
+    origin: true, // Dynamically allow whatever origin is making the request
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
     optionsSuccessStatus: 200
 }));
 app.use(express.json());
