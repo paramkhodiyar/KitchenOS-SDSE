@@ -47,6 +47,16 @@ KitchenOS is built as a monorepo containing both the client and server applicati
 - **Frontend**: A comprehensive Single Page Application (SPA) built with performance and user experience in mind. It communicates with the backend via RESTful APIs.
 - **Backend**: A robust REST API server that handles business logic, authentication, and database interactions.
 - **Database**: Relational database (PostgreSQL) managed via an ORM for structured data persistence.
+### Design Patterns Utilized
+
+1. **Singleton Pattern**
+   Ensures only one shared instance of critical services like the database connection exists throughout the application. 
+   - **Example:** In our application, `PrismaClient` is instantiated once and reused to avoid connection pooling exhaustion.
+
+2. **Strategy Pattern**
+   Used for interchangeable payment processing workflows, enabling dynamic switching between payment methods without modifying core transaction logic.
+   - **Example:** We utilize `CashPaymentStrategy` and `UPIPaymentStrategy` (implementing a common interface) to handle transaction verifications differently depending on the account type.
+
 ### ER Diagram
 ![ER Diagram](backend/diagrams/erDiagram.png)
 ### Sequence Diagram

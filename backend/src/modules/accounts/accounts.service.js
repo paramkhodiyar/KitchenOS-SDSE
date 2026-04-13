@@ -1,4 +1,5 @@
 import prisma from "../../config/prisma.js";
+import { getPaymentStrategy } from "../../utils/paymentStrategy.js";
 
 /**
  * Record income when order is completed
@@ -36,6 +37,10 @@ const recordOrderIncome = async ({
         throw { status: 404, message: "Account not found" };
     }
 
+    // Identify and execute the design pattern (Strategy Pattern)
+    const paymentStrategy = getPaymentStrategy(account.type);
+    const paymentResult = paymentStrategy.processPayment(order.total);
+
     return prisma.$transaction(async (tx) => {
         const transaction = await tx.transaction.create({
             data: {
@@ -44,7 +49,7 @@ const recordOrderIncome = async ({
                 orderId,
                 type: "INCOME",
                 amount: order.total,
-                note: `Order ${order.id}`,
+                note: `Order ${order.id} | ${paymentResult.message}`,
             },
         });
 
