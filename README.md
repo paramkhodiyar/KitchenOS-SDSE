@@ -68,7 +68,7 @@ KitchenOS is built as a monorepo containing both the client and server applicati
 ### UseCase Diagram
 ![UseCase](backend/diagrams/UseCase.jpeg)
 ### Class Diagram
-![ClassDiagram](backend/diagrams/classDiagram.png)
+![ClassDiagram](backend/diagrams/classdiagram.png)
 
 
 
