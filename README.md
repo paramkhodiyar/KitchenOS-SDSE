@@ -80,7 +80,7 @@ KitchenOS is built as a monorepo containing both the client and server applicati
 **Backend**
 - **Runtime**: Node.js
 - **Framework**: Express.js
-- **Database**: PostgreSQL (hosted on Neon Tech).
+- **Database**: PostgreSQL
 - **ORM**: Prisma (Schema modeling, migrations, and type-safe queries).
 - **Authentication**: JWT (JSON Web Tokens) & Bcrypt for PIN hashing.
 - **Logging**: Custom middleware for request/error logging.
@@ -94,7 +94,7 @@ The backend exposes a JSON REST API. All protected endpoints require a valid Bea
 ### Authentication (`/v1/auth`)
 
 | Method | Endpoint | Description | Access |
-|sd|---|---|---|
+|---|---|---|---|
 | POST | `/setup` | Initialize a new store with owner details | Public |
 | POST | `/check` | Check if a store code exists | Public |
 | POST | `/unlock` | Authenticate user via PIN and Role | Public |
@@ -153,7 +153,7 @@ The backend exposes a JSON REST API. All protected endpoints require a valid Bea
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/paramkhodiyar/KitchenOS-SDSE.git
    cd KitchenOS
    ```
 
