@@ -175,8 +175,9 @@ export function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                             </p>
 
                             <Button
+                                variant="outline"
                                 size="xl"
-                                className="w-full text-lg h-16 rounded-xl border border-black"
+                                className="w-full text-lg h-16 rounded-xl border-2 border-black hover:bg-gray-50"
                                 onClick={() => processOrder()}
                                 disabled={items.length === 0}
                             >
