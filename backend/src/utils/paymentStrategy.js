@@ -1,7 +1,6 @@
-/**
- * PaymentStrategy Base Class representing the interface
- * Uses OOP principles (Abstraction, Polymorphism)
- */
+// The Strategy Pattern is used for handling interchangeable payment workflows (CASH, UPI, BANK).
+// This approach allows the system to switch between different algorithms easily without complicating the main workflow with large and messy `if-else` or `switch` statements. It keeps the core logic clean and organized, and also makes it easier to add new behaviors in the future without modifying existing code, which follows the Open/Closed Principle.
+
 export class PaymentStrategy {
     constructor() {
         if (this.constructor === PaymentStrategy) {
@@ -14,12 +13,9 @@ export class PaymentStrategy {
     }
 }
 
-/**
- * Concrete Strategy: Cash Payment
- */
+
 export class CashPaymentStrategy extends PaymentStrategy {
     processPayment(amount) {
-        // In a real scenario, this might trigger a cash drawer command
         return {
             status: "SUCCESS",
             method: "CASH",
@@ -29,12 +25,9 @@ export class CashPaymentStrategy extends PaymentStrategy {
     }
 }
 
-/**
- * Concrete Strategy: UPI Payment
- */
+
 export class UPIPaymentStrategy extends PaymentStrategy {
     processPayment(amount) {
-        // In a real scenario, this would integrate with Razorpay/PhonePe API to generate a QR
         return {
             status: "SUCCESS",
             method: "UPI",
@@ -44,12 +37,9 @@ export class UPIPaymentStrategy extends PaymentStrategy {
     }
 }
 
-/**
- * Concrete Strategy: Bank/Card Payment 
- */
+
 export class BankPaymentStrategy extends PaymentStrategy {
     processPayment(amount) {
-        // Integration with external card terminals or Stripe
         return {
             status: "SUCCESS",
             method: "BANK",
@@ -59,9 +49,7 @@ export class BankPaymentStrategy extends PaymentStrategy {
     }
 }
 
-/**
- * Strategy Context / Factory pattern to resolve strategy based on account type
- */
+
 export const getPaymentStrategy = (accountType) => {
     switch (accountType) {
         case "CASH":
@@ -72,6 +60,6 @@ export const getPaymentStrategy = (accountType) => {
         case "WALLET":
             return new BankPaymentStrategy();
         default:
-            return new CashPaymentStrategy(); // Fallback
+            return new CashPaymentStrategy(); 
     }
 };
