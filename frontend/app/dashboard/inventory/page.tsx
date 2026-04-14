@@ -10,7 +10,7 @@ import {
     RawMaterial
 } from "@/services/inventoryService";
 import { toast } from "react-hot-toast";
-import { Loader2, Package, Plus, Pencil, Trash2, X, AlertTriangle } from "lucide-react";
+import { Loader2, Package, Plus, Pencil, Trash2, X, AlertTriangle, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -20,6 +20,7 @@ export default function InventoryPage() {
     const [materials, setMaterials] = useState<RawMaterial[]>([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
+    const [searchQuery, setSearchQuery] = useState("");
     const itemsPerPage = 10;
 
     // Modal States
@@ -32,6 +33,14 @@ export default function InventoryPage() {
     useEffect(() => {
         loadData();
     }, []);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery]);
+
+    const filteredMaterials = materials.filter(m => 
+        m.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     const loadData = async () => {
         try {
@@ -113,6 +122,18 @@ export default function InventoryPage() {
                 </Button>
             </div>
 
+            <div className="px-1">
+                <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input 
+                        placeholder="Search inventory items..." 
+                        className="pl-9 bg-background/50 border-muted-foreground/20"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                </div>
+            </div>
+
             {loading ? (
                 <div className="flex justify-center py-20"><Loader2 className="animate-spin" /></div>
             ) : materials.length === 0 ? (
@@ -120,9 +141,14 @@ export default function InventoryPage() {
                     <Package className="w-12 h-12 mx-auto mb-4" />
                     <p>No raw materials configured.</p>
                 </div>
+            ) : filteredMaterials.length === 0 ? (
+                <div className="text-center py-20 text-muted-foreground">
+                    <Search className="w-12 h-12 mx-auto mb-4 opacity-20" />
+                    <p>No items found for "{searchQuery}"</p>
+                </div>
             ) : (
                 <div className="grid gap-3">
-                    {materials.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((material) => (
+                    {filteredMaterials.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map((material) => (
                         <motion.div
                             layout
                             initial={{ opacity: 0, y: 10 }}
@@ -185,7 +211,7 @@ export default function InventoryPage() {
                     ))}
 
                     {/* Pagination Controls */}
-                    {materials.length > itemsPerPage && (
+                    {filteredMaterials.length > itemsPerPage && (
                         <div className="flex justify-center items-center gap-4 mt-8">
                             <Button
                                 variant="outline"
@@ -195,12 +221,12 @@ export default function InventoryPage() {
                                 Previous
                             </Button>
                             <span className="text-sm font-medium">
-                                Page {currentPage} of {Math.ceil(materials.length / itemsPerPage)}
+                                Page {currentPage} of {Math.ceil(filteredMaterials.length / itemsPerPage)}
                             </span>
                             <Button
                                 variant="outline"
-                                onClick={() => setCurrentPage(p => Math.min(Math.ceil(materials.length / itemsPerPage), p + 1))}
-                                disabled={currentPage >= Math.ceil(materials.length / itemsPerPage)}
+                                onClick={() => setCurrentPage(p => Math.min(Math.ceil(filteredMaterials.length / itemsPerPage), p + 1))}
+                                disabled={currentPage >= Math.ceil(filteredMaterials.length / itemsPerPage)}
                             >
                                 Next
                             </Button>
