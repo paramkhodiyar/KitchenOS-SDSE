@@ -1,3 +1,5 @@
+// Here we have used a singleton design pattern to create only one instance of db connection pool to prevent memory leaks
+
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 
