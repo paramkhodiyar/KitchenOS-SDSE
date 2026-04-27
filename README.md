@@ -57,6 +57,9 @@ KitchenOS is built as a monorepo containing both the client and server applicati
    Used for interchangeable payment processing workflows, enabling dynamic switching between payment methods without modifying core transaction logic.
    - **Example:** We utilize `CashPaymentStrategy` and `UPIPaymentStrategy` (implementing a common interface) to handle transaction verifications differently depending on the account type.
 
+### Project Report
+- [PDF](KitchenOS_Project_Report.pdf)
+- [G-Drive](https://drive.google.com/file/d/1qtkT0HCt1Nw9fs-mHMo-MGLNB-OlJvKE/view?usp=sharing)
 
 ### Excalidraw 
 [ExcaliDraw](https://excalidraw.com/#room=b18d71771add5de4b4f0,1l4lNnrEFPMoBuh1d8_iOQ)
